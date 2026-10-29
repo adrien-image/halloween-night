@@ -332,7 +332,7 @@ def _():
     return finish(o)
 
 
-@scene("15b", "Le grand-père, affamé, se tourne lentement vers le héros figé : « vous tombez à pic ! »")
+@scene("16", "Le grand-père, affamé, se tourne lentement vers le héros figé : « vous tombez à pic ! »")
 def _():
     o = set_bedroom()
     o += door(40, 540, 110, 250, "closed") + nightstand(820, 540)
@@ -341,7 +341,7 @@ def _():
     return finish(o)
 
 
-@scene("16", "Henri s'approche et renifle l'air autour du héros, qui transpire de nervosité.")
+@scene("17", "Henri s'approche et renifle l'air autour du héros, qui transpire de nervosité.")
 def _():
     o = set_bedroom()
     o += henri(530, 565, 1.05, expr="surprised", flip=True)
@@ -350,7 +350,7 @@ def _():
     return finish(o)
 
 
-@scene("17", "Henri recule avec un cri de dégoût en sentant l'ail ; le héros tient une tartine à l'ail.")
+@scene("18", "Henri recule avec un cri de dégoût en sentant l'ail ; le héros tient une tartine à l'ail.")
 def _():
     o = set_bedroom()
     o += henri(650, 565, 1, expr="disgust", pose="shrug") + anger(720, 280) + anger(560, 300, 0.8)
@@ -359,7 +359,7 @@ def _():
     return finish(o)
 
 
-@scene("18", "Henri, troublé, se parle à voix haute : souvenirs de l'ail d'Yvonne et tentation interdite.")
+@scene("19", "Henri, troublé, se parle à voix haute : souvenirs de l'ail d'Yvonne et tentation interdite.")
 def _():
     o = set_bedroom()
     o += henri(560, 565, 1, expr="hungry", pose="chin")
@@ -369,7 +369,7 @@ def _():
     return finish(o)
 
 
-@scene("19", "Face à Henri tiraillé par l'odeur d'ail, le héros décide de reprendre son destin en main.")
+@scene("20", "Face à Henri tiraillé par l'odeur d'ail, le héros décide de reprendre son destin en main.")
 def _():
     o = set_bedroom()
     o += henri(650, 565, 1, expr="hungry", pose="chin")
@@ -377,7 +377,7 @@ def _():
     return finish(o)
 
 
-@scene("20", "Henri tousse violemment dans un nuage d'haleine à l'ail, puis BAM ! la porte s'ouvre et ses yeux deviennent furieux.")
+@scene("21", "Henri tousse violemment dans un nuage d'haleine à l'ail, puis BAM ! la porte s'ouvre et ses yeux deviennent furieux.")
 def _():
     o = set_bedroom()
     o += door(140, 540, 110, 250, "open")
@@ -388,7 +388,7 @@ def _():
     return finish(o)
 
 
-@scene("21", "Le héros dévale l'escalier trois marches à la fois ; en bas, Mme Morticia l'attend dans l'embrasure du salon.")
+@scene("22", "Le héros dévale l'escalier trois marches à la fois ; en bas, Mme Morticia l'attend dans l'embrasure du salon.")
 def _():
     o = set_stairs()
     o += door(30, 600, 120, 260, "open", inside="#ffcf7a") + morticia(110, 600, 0.85, expr="tender")
@@ -397,7 +397,7 @@ def _():
     return finish(o)
 
 
-@scene("22", "Dans l'entrée, Mme Morticia serre la clé pendue à son cou pendant qu'une voix résonne à l'étage. Gloups.")
+@scene("23", "Dans l'entrée, Mme Morticia serre la clé pendue à son cou pendant qu'une voix résonne à l'étage. Gloups.")
 def _():
     o = set_hall(morticia(180, 330, 0.5))
     o += morticia(380, 560, 1, expr="sly", pose="key")
@@ -407,7 +407,7 @@ def _():
     return finish(o)
 
 
-@scene("23", "Coincé dans l'entrée entre Mme Morticia et la porte fermée à clé : que faire ?")
+@scene("24", "Coincé dans l'entrée entre Mme Morticia et la porte fermée à clé : que faire ?")
 def _():
     o = set_hall()
     o += morticia(330, 560, 1, expr="smile", pose="key")
@@ -416,7 +416,7 @@ def _():
     return finish(o)
 
 
-@scene("24", "Le héros fait semblant de répondre au téléphone ; Mme Morticia l'observe sans ciller.")
+@scene("25", "Le héros fait semblant de répondre au téléphone ; Mme Morticia l'observe sans ciller.")
 def _():
     o = set_hall()
     o += morticia(330, 560, 1, expr="stern", pose="fold")
@@ -425,7 +425,7 @@ def _():
     return finish(o)
 
 
-@scene("25", "Mme Morticia ne sourit plus et fait tourner la petite clé ; à l'étage, des pas résonnent lentement.")
+@scene("26", "Mme Morticia ne sourit plus et fait tourner la petite clé ; à l'étage, des pas résonnent lentement.")
 def _():
     o = set_hall()
     o += fill(P("M440,60 Q470,30 500,60 L520,190 L420,190 Z") + E(470, 40, 26, 30), "#140e1e", 'opacity="0.5"')
@@ -434,7 +434,7 @@ def _():
     return finish(o)
 
 
-@scene("26", "Le lendemain matin : deux petites marques de crocs sur le cou du héros et une carte des Morticia dans la boîte aux lettres.")
+@scene("27", "Le lendemain matin : deux petites marques de crocs sur le cou du héros et une carte des Morticia dans la boîte aux lettres.")
 def _():
     o = set_home("day")
     o += hero(420, 570, 1.05, expr="scared", pose="hold", item="card", bite=True)
@@ -442,14 +442,14 @@ def _():
     return finish(o)
 
 
-@scene("27", "Fin : la carte « Henri et Yvonne Morticia » et deux petits points rouges.")
+@scene("28", "Fin : la carte « Henri et Yvonne Morticia » et deux petits points rouges.")
 def _():
     o = set_fin() + g(prop("card"), 480, 300, 4)
     o += fill(E(450, 420, 6) + E(510, 420, 6), "#c4122e")
     return finish(o)
 
 
-@scene("28", "Mme Morticia, ravie, revient avec un plateau de trois tasses fumantes ; le héros installé dans un fauteuil ancien.")
+@scene("29", "Mme Morticia, ravie, revient avec un plateau de trois tasses fumantes ; le héros installé dans un fauteuil ancien.")
 def _():
     o = set_living()
     o += armchair_rear(280, 550) + hero(280, 550, 0.95, expr="happy", legs="sit") + armchair_front(280, 550)
@@ -458,7 +458,7 @@ def _():
     return finish(o)
 
 
-@scene("29", "Le héros s'endort, la tête qui tourne ; Mme Morticia lui caresse la joue comme une grand-mère.")
+@scene("30", "Le héros s'endort, la tête qui tourne ; Mme Morticia lui caresse la joue comme une grand-mère.")
 def _():
     o = set_living()
     o += armchair_rear(320, 550) + hero(320, 550, 0.95, expr="dizzy", legs="sit") + armchair_front(320, 550)
@@ -468,7 +468,7 @@ def _():
     return finish(o)
 
 
-@scene("30", "À la lueur des bougies, Henri s'accroupit devant le héros paralysé et dévoile deux longues canines ; Yvonne derrière.")
+@scene("31", "À la lueur des bougies, Henri s'accroupit devant le héros paralysé et dévoile deux longues canines ; Yvonne derrière.")
 def _():
     o = set_living(fire=True) + darken(0.35)
     o += armchair_rear(260, 550) + hero(260, 550, 0.95, expr="scared", legs="sit") + armchair_front(260, 550)
@@ -479,7 +479,7 @@ def _():
     return finish(o)
 
 
-@scene("31", "Dans l'obscurité, seuls brillent les yeux rouges et les crocs d'Henri ; une chauve-souris s'envole.")
+@scene("32", "Dans l'obscurité, seuls brillent les yeux rouges et les crocs d'Henri ; une chauve-souris s'envole.")
 def _():
     o = set_living(fire=False) + darken(0.8)
     o += fill(E(440, 260, 10, 6) + E(500, 260, 10, 6), "#ff2a3c") + glow(470, 260, 90, "#ff2a3c", 0.4)
@@ -488,7 +488,7 @@ def _():
     return finish(o)
 
 
-@scene("32", "Le lendemain matin, Henri et Yvonne côte à côte devant la cheminée ; une nouvelle photo du héros entre eux sur la commode.")
+@scene("33", "Le lendemain matin, Henri et Yvonne côte à côte devant la cheminée ; une nouvelle photo du héros entre eux sur la commode.")
 def _():
     o = set_living(fire=True, day=True)
     o += sofa_rear(420, 550) + henri(340, 550, 0.9, expr="smile", legs="sit") + morticia(500, 560, 0.85, expr="smile") + sofa_front(420, 550)
@@ -496,13 +496,13 @@ def _():
     return finish(o)
 
 
-@scene("33", "Fin : la photo du héros souriant, assis entre Henri et Yvonne.")
+@scene("34", "Fin : la photo du héros souriant, assis entre Henri et Yvonne.")
 def _():
     o = set_fin() + frame_wall(480, 300, 300, 240, "trio") + sparkle(320, 160) + sparkle(650, 180, 0.8)
     return finish(o)
 
 
-@scene("34", "Le héros propose un marché à Henri : les deux se serrent la main, le vieil homme sourit d'un air inquiétant.")
+@scene("35", "Le héros propose un marché à Henri : les deux se serrent la main, le vieil homme sourit d'un air inquiétant.")
 def _():
     o = set_bedroom()
     o += hero(320, 570, 1, expr="determined", pose="offer")
@@ -511,7 +511,7 @@ def _():
     return finish(o)
 
 
-@scene("35", "À la porte ouverte, le héros remarque deux petits points noirs sur sa peau ; Henri sourit toujours.")
+@scene("36", "À la porte ouverte, le héros remarque deux petits points noirs sur sa peau ; Henri sourit toujours.")
 def _():
     o = set_bedroom()
     o += door(120, 540, 110, 250, "ajar")
@@ -521,7 +521,7 @@ def _():
     return finish(o)
 
 
-@scene("36", "Dans la cuisine déserte, le héros inspecte le réfrigérateur et trouve des gousses d'ail.")
+@scene("37", "Dans la cuisine déserte, le héros inspecte le réfrigérateur et trouve des gousses d'ail.")
 def _():
     o = set_kitchen() + fridge(780, 540, 1, open_=True)
     o += hero(560, 575, 1, expr="happy", pose="hold", item="garlic")
@@ -529,7 +529,7 @@ def _():
     return finish(o)
 
 
-@scene("37", "Le héros prépare une omelette aux restes ; sur le plan de travail, un couteau, de l'ail et une goutte de sang.")
+@scene("38", "Le héros prépare une omelette aux restes ; sur le plan de travail, un couteau, de l'ail et une goutte de sang.")
 def _():
     o = set_kitchen() + fridge(820, 540)
     o += hero(470, 575, 1, expr="worried", pose="hold2", item="plate")
@@ -537,7 +537,7 @@ def _():
     return finish(o)
 
 
-@scene("38", "Henri goûte l'omelette, les yeux fermés, un sourire béat ; le héros satisfait.")
+@scene("39", "Henri goûte l'omelette, les yeux fermés, un sourire béat ; le héros satisfait.")
 def _():
     o = set_bedroom(lit=True)
     o += armchair_rear(600, 550) + henri(600, 550, 1, expr="blissful", legs="sit", pose="eat", item="fork") + armchair_front(600, 550)
@@ -546,7 +546,7 @@ def _():
     return finish(o)
 
 
-@scene("39", "Le visage d'Henri gonfle, rouge et enflé ; le héros affolé compose le 15.")
+@scene("40", "Le visage d'Henri gonfle, rouge et enflé ; le héros affolé compose le 15.")
 def _():
     o = set_bedroom(lit=True)
     o += armchair_rear(620, 550) + henri(620, 550, 1, expr="swollen", legs="sit") + armchair_front(620, 550)
@@ -554,7 +554,7 @@ def _():
     return finish(o)
 
 
-@scene("40", "Les secours arrivent, gyrophares bleus et rouges ; un secouriste interroge le héros pendant qu'on prend Henri en charge.")
+@scene("41", "Les secours arrivent, gyrophares bleus et rouges ; un secouriste interroge le héros pendant qu'on prend Henri en charge.")
 def _():
     o = set_bedroom(lit=True)
     o += glow(480, 175, 260, "#3a7bff", 0.45) + glow(380, 175, 160, "#ff3a3a", 0.35)
@@ -564,7 +564,7 @@ def _():
     return finish(o)
 
 
-@scene("41", "Dans la cuisine, le secouriste range son matériel et explique : la femme de M. Morticia est morte il y a six ans. Le héros est figé.")
+@scene("42", "Dans la cuisine, le secouriste range son matériel et explique : la femme de M. Morticia est morte il y a six ans. Le héros est figé.")
 def _():
     o = set_kitchen()
     o += paramedic(640, 575, 1, flip=True)
@@ -573,7 +573,7 @@ def _():
     return finish(o)
 
 
-@scene("42", "Sur la table, une tasse de café fume encore à côté d'un petit mot élégant ; la silhouette fantomatique d'Yvonne s'efface.")
+@scene("43", "Sur la table, une tasse de café fume encore à côté d'un petit mot élégant ; la silhouette fantomatique d'Yvonne s'efface.")
 def _():
     o = set_kitchen()
     o += morticia(760, 560, 1, expr="smile", ghost=True, opacity=0.35)
@@ -582,14 +582,14 @@ def _():
     return finish(o)
 
 
-@scene("43", "Fin : la tasse fumante, le petit mot d'Yvonne et son ombre fantomatique.")
+@scene("44", "Fin : la tasse fumante, le petit mot d'Yvonne et son ombre fantomatique.")
 def _():
     o = set_fin("#1e2a3a") + morticia(480, 520, 1.2, expr="smile", ghost=True, opacity=0.3)
     o += g(prop("cup"), 420, 480, 3) + g(prop("card"), 600, 480, 2, rot=8)
     return finish(o)
 
 
-@scene("44", "Henri mâche une tranche de pain, puis s'immobilise, déçu ; le héros tient le plateau omelette et pain grillé.")
+@scene("45", "Henri mâche une tranche de pain, puis s'immobilise, déçu ; le héros tient le plateau omelette et pain grillé.")
 def _():
     o = set_bedroom(lit=True)
     o += armchair_rear(620, 550) + henri(620, 550, 1, expr="stern", legs="sit", pose="eat", item="bread") + armchair_front(620, 550)
@@ -597,7 +597,7 @@ def _():
     return finish(o)
 
 
-@scene("45", "Henri se lève, menaçant : « Un pacte est un pacte » ; le héros recule jusqu'à la porte.")
+@scene("46", "Henri se lève, menaçant : « Un pacte est un pacte » ; le héros recule jusqu'à la porte.")
 def _():
     o = set_bedroom(lit=True) + darken(0.2)
     o += door(40, 540, 110, 250, "closed")
@@ -606,14 +606,14 @@ def _():
     return finish(o)
 
 
-@scene("46", "Le héros s'enfuit en courant de la maison des Morticia vers la fête, sans se retourner.")
+@scene("47", "Le héros s'enfuit en courant de la maison des Morticia vers la fête, sans se retourner.")
 def _():
     o = set_street()
     o += hero(470, 590, 0.8, expr="scared", pose="run", legs="run", flip=True) + motion(620, 410)
     return finish(o)
 
 
-@scene("47", "Un an plus tard, chez lui, le héros goûte de l'ail confit : plus aucun goût, plus aucune odeur.")
+@scene("48", "Un an plus tard, chez lui, le héros goûte de l'ail confit : plus aucun goût, plus aucune odeur.")
 def _():
     o = set_home("evening")
     o += hero(470, 545, 1, expr="blank", legs="sit", pose="hold", item="garlic")
@@ -623,7 +623,7 @@ def _():
     return finish(o)
 
 
-@scene("48", "Le téléphone vibre : un message d'un numéro inconnu signé Henri. Un frisson parcourt le dos du héros.")
+@scene("49", "Le téléphone vibre : un message d'un numéro inconnu signé Henri. Un frisson parcourt le dos du héros.")
 def _():
     o = set_home("night")
     o += hero(330, 570, 1, expr="scared")
@@ -631,14 +631,14 @@ def _():
     return finish(o)
 
 
-@scene("49", "Fin : une gousse d'ail barrée, l'odorat perdu à jamais.")
+@scene("50", "Fin : une gousse d'ail barrée, l'odorat perdu à jamais.")
 def _():
     o = set_fin() + garlic(480, 330, 4)
     o += line("M480,190 m-150,0 a150,150 0 1,0 300,0 a150,150 0 1,0 -300,0", 14, "#c4122e") + line("M375,85 L585,295", 14, "#c4122e")
     return finish(o)
 
 
-@scene("50", "Un vieux cadre glisse de la table de chevet ; le héros ramasse la photo de mariage d'Yvonne et Henri.")
+@scene("51", "Un vieux cadre glisse de la table de chevet ; le héros ramasse la photo de mariage d'Yvonne et Henri.")
 def _():
     o = set_bedroom()
     o += nightstand(640, 540) + armchair_back_view(470, 540, 1)
@@ -647,7 +647,7 @@ def _():
     return finish(o)
 
 
-@scene("51", "Le héros, perplexe devant la date du cadre, quand BAM ! la porte claque derrière lui.")
+@scene("52", "Le héros, perplexe devant la date du cadre, quand BAM ! la porte claque derrière lui.")
 def _():
     o = set_bedroom()
     o += door(40, 540, 110, 250, "closed")
@@ -657,7 +657,7 @@ def _():
     return finish(o)
 
 
-@scene("52", "Le vieil homme se redresse dans son fauteuil, la voix rauque et agressive : « Qui va là ? »")
+@scene("53", "Le vieil homme se redresse dans son fauteuil, la voix rauque et agressive : « Qui va là ? »")
 def _():
     o = set_bedroom()
     o += armchair_rear(620, 550) + henri(620, 550, 1, expr="angry", legs="sit") + armchair_front(620, 550)
@@ -665,7 +665,7 @@ def _():
     return finish(o)
 
 
-@scene("53", "Le héros tire sur la poignée de la porte coincée ; derrière lui, une ombre se lève dans un silence absolu.")
+@scene("54", "Le héros tire sur la poignée de la porte coincée ; derrière lui, une ombre se lève dans un silence absolu.")
 def _():
     o = set_bedroom() + darken(0.2)
     o += door(120, 540, 120, 260, "closed")
@@ -674,7 +674,7 @@ def _():
     return finish(o)
 
 
-@scene("54", "Face au héros, un vieil homme presque transparent, triste et cadavérique, vêtu avec une élégance d'un autre temps.")
+@scene("55", "Face au héros, un vieil homme presque transparent, triste et cadavérique, vêtu avec une élégance d'un autre temps.")
 def _():
     o = set_bedroom() + darken(0.2)
     o += henri(600, 565, 1.1, expr="sad", ghost=True) + glow(600, 380, 180, "#9fdcf5", 0.25)
@@ -682,7 +682,7 @@ def _():
     return finish(o)
 
 
-@scene("55", "Le héros hésite entre montrer le cadre tombé et chercher un objet pour ouvrir la porte.")
+@scene("56", "Le héros hésite entre montrer le cadre tombé et chercher un objet pour ouvrir la porte.")
 def _():
     o = set_bedroom()
     o += door(40, 540, 110, 250, "closed") + henri(700, 565, 1, expr="sad", ghost=True)
@@ -691,7 +691,7 @@ def _():
     return finish(o)
 
 
-@scene("56", "Henri tient le cadre et effleure le visage d'Yvonne ; sa mine sévère laisse place à une profonde tristesse.")
+@scene("57", "Henri tient le cadre et effleure le visage d'Yvonne ; sa mine sévère laisse place à une profonde tristesse.")
 def _():
     o = set_bedroom()
     o += henri(600, 565, 1.05, expr="sad", pose="hold2", item="frame")
@@ -699,7 +699,7 @@ def _():
     return finish(o)
 
 
-@scene("57", "Henri retourne s'asseoir dans son fauteuil et murmure : « Et je tiens toujours mes promesses. » Silence pesant.")
+@scene("58", "Henri retourne s'asseoir dans son fauteuil et murmure : « Et je tiens toujours mes promesses. » Silence pesant.")
 def _():
     o = set_bedroom()
     o += armchair_rear(620, 550) + henri(620, 550, 1, expr="stern", legs="sit") + armchair_front(620, 550)
@@ -707,7 +707,7 @@ def _():
     return finish(o)
 
 
-@scene("58", "Gêné par le silence, le héros réfléchit : parler de son grand amour, ou de l'échiquier posé sur une petite table ?")
+@scene("59", "Gêné par le silence, le héros réfléchit : parler de son grand amour, ou de l'échiquier posé sur une petite table ?")
 def _():
     o = set_bedroom()
     o += armchair_rear(680, 550) + henri(680, 550, 1, expr="neutral", legs="sit") + armchair_front(680, 550)
@@ -717,7 +717,7 @@ def _():
     return finish(o)
 
 
-@scene("59", "Le héros, assis sur le lit, raconte son grand amour ; Henri l'écoute avec un sourire sincère.")
+@scene("60", "Le héros, assis sur le lit, raconte son grand amour ; Henri l'écoute avec un sourire sincère.")
 def _():
     o = set_bedroom()
     o += hero(830, 520, 0.85, expr="happy", legs="sit")
@@ -726,7 +726,7 @@ def _():
     return finish(o)
 
 
-@scene("60", "Henri tend son alliance au héros ému : « certaines promesses sont faites pour durer ».")
+@scene("61", "Henri tend son alliance au héros ému : « certaines promesses sont faites pour durer ».")
 def _():
     o = set_bedroom()
     o += henri(620, 570, 1, expr="smile", pose="offer", item="ring", flip=True)
@@ -735,7 +735,7 @@ def _():
     return finish(o)
 
 
-@scene("61", "De retour à la fête avec ses amis, le héros garde précieusement l'alliance dans sa poche.")
+@scene("62", "De retour à la fête avec ses amis, le héros garde précieusement l'alliance dans sa poche.")
 def _():
     o = set_party()
     o += ghost_friend(160, 530, 0.85) + person(780, 530, 0.85, hat="witch", skin=("#9fd17a", "#6fa84a"), top=("#4b2d63", "#2e1a40"))
@@ -744,7 +744,7 @@ def _():
     return finish(o)
 
 
-@scene("62", "Après le mariage, au petit-déjeuner, le héros lit dans le journal l'avis de décès d'Henri Morticia.")
+@scene("63", "Après le mariage, au petit-déjeuner, le héros lit dans le journal l'avis de décès d'Henri Morticia.")
 def _():
     o = set_home("day")
     o += frame_wall(150, 150, 120, 140, "couple") + heart(150, 60, 0.5)
@@ -753,7 +753,7 @@ def _():
     return finish(o)
 
 
-@scene("63", "Le héros serre l'alliance d'Henri dans sa main ; par la fenêtre, deux silhouettes fantomatiques enlacées dans le ciel.")
+@scene("64", "Le héros serre l'alliance d'Henri dans sa main ; par la fenêtre, deux silhouettes fantomatiques enlacées dans le ciel.")
 def _():
     o = set_home("night")
     o += clip(henri(690, 250, 0.45, expr="smile", ghost=True) + morticia(750, 250, 0.42, expr="smile", ghost=True), R(620, 70, 200, 180))
@@ -762,14 +762,14 @@ def _():
     return finish(o)
 
 
-@scene("64", "Fin : deux alliances entrelacées et un cœur, un amour qui traverse le temps.")
+@scene("65", "Fin : deux alliances entrelacées et un cœur, un amour qui traverse le temps.")
 def _():
     o = set_fin("#2a1a3a") + heart(480, 220, 3)
     o += g(prop("ring"), 430, 420, 4) + g(prop("ring"), 530, 420, 4)
     return finish(o)
 
 
-@scene("65", "Les yeux d'Henri s'illuminent devant l'échiquier : « Cela vous dirait une petite partie ? »")
+@scene("66", "Les yeux d'Henri s'illuminent devant l'échiquier : « Cela vous dirait une petite partie ? »")
 def _():
     o = set_bedroom(lit=True)
     o += armchair_rear(640, 550) + henri(640, 550, 1, expr="excited", legs="sit") + armchair_front(640, 550)
@@ -778,7 +778,7 @@ def _():
     return finish(o)
 
 
-@scene("66", "Le héros s'installe face à Henri et avance son premier pion. La partie commence.")
+@scene("67", "Le héros s'installe face à Henri et avance son premier pion. La partie commence.")
 def _():
     o = set_bedroom(lit=True)
     o += armchair_rear(720, 550) + henri(720, 550, 0.95, expr="smile", legs="sit") + armchair_front(720, 550)
@@ -787,7 +787,7 @@ def _():
     return finish(o)
 
 
-@scene("67", "Partie endiablée : les pièces volent, Henri semble rajeunir à chaque coup, le cavalier surgit.")
+@scene("68", "Partie endiablée : les pièces volent, Henri semble rajeunir à chaque coup, le cavalier surgit.")
 def _():
     o = set_bedroom(lit=True) + glow(480, 300, 300, "#ffd23f", 0.2)
     o += armchair_rear(720, 550) + henri(720, 550, 0.95, expr="excited", legs="sit", young=True) + armchair_front(720, 550)
@@ -797,7 +797,7 @@ def _():
     return finish(o)
 
 
-@scene("68", "CLAC ! La porte s'ouvre : Mme Morticia, contrariée, se tient sur le seuil ; le fauteuil d'Henri devient flou.")
+@scene("69", "CLAC ! La porte s'ouvre : Mme Morticia, contrariée, se tient sur le seuil ; le fauteuil d'Henri devient flou.")
 def _():
     o = set_bedroom(lit=True)
     o += door(40, 540, 110, 250, "open", inside="#ffcf7a") + morticia(100, 545, 0.95, expr="annoyed", pose="cross")
@@ -808,7 +808,7 @@ def _():
     return finish(o)
 
 
-@scene("69", "Le fauteuil est vide, les pièces toujours sur l'échiquier ; le héros, déboussolé, face à Mme Morticia agacée.")
+@scene("70", "Le fauteuil est vide, les pièces toujours sur l'échiquier ; le héros, déboussolé, face à Mme Morticia agacée.")
 def _():
     o = set_bedroom(lit=True)
     o += armchair_rear(740, 550) + armchair_front(740, 550)
@@ -818,7 +818,7 @@ def _():
     return finish(o)
 
 
-@scene("70", "Dehors, le héros se retourne une dernière fois : une silhouette se tient derrière la fenêtre de l'étage.")
+@scene("71", "Dehors, le héros se retourne une dernière fois : une silhouette se tient derrière la fenêtre de l'étage.")
 def _():
     o = set_street(silhouette=True)
     o += hero(380, 590, 0.75, expr="scared", flip=True) + excl(440, 330, 0.8)
@@ -826,7 +826,7 @@ def _():
     return finish(o)
 
 
-@scene("71", "Le vieil homme derrière la fenêtre articule « Échec et mat » ; un éclair de lumière et la silhouette disparaît.")
+@scene("72", "Le vieil homme derrière la fenêtre articule « Échec et mat » ; un éclair de lumière et la silhouette disparaît.")
 def _():
     o = fill(R(0, 0, W, H), "#5b4f73") + "".join(line(f"M0,{y} L{W},{y}", 2, "#4a4060") for y in range(20, H, 34))
     o += window(280, 80, 400, 380, "flash", curtains=True)
@@ -837,13 +837,13 @@ def _():
     return finish(o)
 
 
-@scene("72", "Fin : un cavalier noir sur l'échiquier, qui attend patiemment sa revanche.")
+@scene("73", "Fin : un cavalier noir sur l'échiquier, qui attend patiemment sa revanche.")
 def _():
     o = set_fin() + chessboard(480, 560, 3) + chess_piece(480, 400, 3, "knight", "#231d33") + glow(480, 300, 120, "#9fdcf5", 0.3)
     return finish(o)
 
 
-@scene("73", "CLIC : le héros allume la lumière ; la chambre apparaît, meubles anciens et dizaines de photographies.")
+@scene("74", "CLIC : le héros allume la lumière ; la chambre apparaît, meubles anciens et dizaines de photographies.")
 def _():
     o = set_bedroom(lit=True, photos=True)
     o += armchair_back_view(580, 545, 1)
@@ -853,7 +853,7 @@ def _():
     return finish(o)
 
 
-@scene("74", "Sur chaque photo, le même couple à travers les années ; le héros glisse un coupe-papier dans la porte quand Henri murmure.")
+@scene("75", "Sur chaque photo, le même couple à travers les années ; le héros glisse un coupe-papier dans la porte quand Henri murmure.")
 def _():
     o = set_bedroom(lit=True, photos=True)
     o += door(380, 540, 120, 260, "closed")
@@ -862,7 +862,7 @@ def _():
     return finish(o)
 
 
-@scene("75", "Dans le reflet de la vitre, Henri se tient debout derrière le héros ; pourtant il est assis dans son fauteuil, des lettres sur la table.")
+@scene("76", "Dans le reflet de la vitre, Henri se tient debout derrière le héros ; pourtant il est assis dans son fauteuil, des lettres sur la table.")
 def _():
     o = set_bedroom(lit=True, photos=True)
     o += clip(henri(500, 400, 0.6, expr="stern", ghost=True) + hero(450, 410, 0.55, expr="scared", opacity=0.5), R(380, 60, 200, 230))
@@ -872,7 +872,7 @@ def _():
     return finish(o)
 
 
-@scene("76", "Sur la table, deux lettres : une adresse écrite à la main avec un timbre des USA, l'autre tapée à la machine.")
+@scene("77", "Sur la table, deux lettres : une adresse écrite à la main avec un timbre des USA, l'autre tapée à la machine.")
 def _():
     o = set_bedroom(lit=True) + table(480, 600, 760, 200)
     o += g(prop("letter_hand"), 320, 330, 3.2, rot=-5) + g(prop("letter_typed"), 650, 330, 3.2, rot=5)
@@ -880,7 +880,7 @@ def _():
     return finish(o)
 
 
-@scene("77", "Le héros lit à voix haute la lettre d'Élise envoyée de Los Angeles, pleine de soleil et d'Hollywood.")
+@scene("78", "Le héros lit à voix haute la lettre d'Élise envoyée de Los Angeles, pleine de soleil et d'Hollywood.")
 def _():
     o = set_bedroom(lit=True, photos=True)
     o += hero(330, 570, 1, expr="neutral", pose="hold2", item="letter_hand")
@@ -892,7 +892,7 @@ def _():
     return finish(o)
 
 
-@scene("78", "La porte s'ouvre toute seule ; Minou se frotte contre les jambes d'Henri qui se penche pour le caresser, nostalgique.")
+@scene("79", "La porte s'ouvre toute seule ; Minou se frotte contre les jambes d'Henri qui se penche pour le caresser, nostalgique.")
 def _():
     o = set_bedroom(lit=True, photos=True)
     o += door(380, 540, 120, 260, "ajar")
@@ -901,20 +901,21 @@ def _():
     return finish(o)
 
 
-@scene("79", "Le héros s'éloigne dans la nuit, Minou dans les bras, avec le sentiment d'un petit moment de bonheur partagé.")
+@scene("80", "Sur le perron, le héros caresse Minou une dernière fois avant de s'éloigner dans la nuit, avec le sentiment d'un petit moment de bonheur partagé.")
 def _():
     o = set_street()
-    o += hero(560, 590, 0.85, expr="moved", pose="hold2", item="cat") + heart(620, 330, 0.5)
+    o += cat(700, 482, 0.55) + heart(700, 400, 0.4)
+    o += hero(520, 590, 0.85, expr="moved", flip=True)
     return finish(o)
 
 
-@scene("80", "Fin : Minou et son médaillon doré sous la lune, qui retrouvera toujours le chemin de la fête.")
+@scene("81", "Fin : Minou et son médaillon doré sous la lune, qui retrouvera toujours le chemin de la fête.")
 def _():
     o = set_fin() + moon(480, 200, 110) + cat(480, 560, 2.6)
     return finish(o)
 
 
-@scene("81", "Le héros lit à voix haute la lettre du notaire, Maître Delorme, au sujet de la succession d'Henri ; il est perplexe.")
+@scene("82", "Le héros lit à voix haute la lettre du notaire, Maître Delorme, au sujet de la succession d'Henri ; il est perplexe.")
 def _():
     o = set_bedroom(lit=True, photos=True)
     o += hero(380, 570, 1, expr="worried", pose="hold2", item="letter_typed") + qmark(470, 220)
@@ -922,7 +923,7 @@ def _():
     return finish(o)
 
 
-@scene("82", "Henri raconte calmement son « décès » de 1986 et son réveil chez lui quelques jours plus tard.")
+@scene("83", "Henri raconte calmement son « décès » de 1986 et son réveil chez lui quelques jours plus tard.")
 def _():
     o = set_bedroom(lit=True, photos=True)
     o += armchair_rear(620, 550) + henri(620, 550, 1, expr="smile", legs="sit") + armchair_front(620, 550)
@@ -930,7 +931,7 @@ def _():
     return finish(o)
 
 
-@scene("83", "La pendule sur la cheminée est arrêtée à 23 h 44 ; Henri à la fenêtre, son reflet presque imperceptible.")
+@scene("84", "La pendule sur la cheminée est arrêtée à 23 h 44 ; Henri à la fenêtre, son reflet presque imperceptible.")
 def _():
     o = set_bedroom(lit=True)
     o += fireplace(220, 540, 0.9, fire=False) + clock(220, 300, 1.4)
@@ -940,7 +941,7 @@ def _():
     return finish(o)
 
 
-@scene("84", "La porte s'entrouvre toute seule ; sur le seuil, le héros se retourne : Henri est déjà rassis dans son fauteuil.")
+@scene("85", "La porte s'entrouvre toute seule ; sur le seuil, le héros se retourne : Henri est déjà rassis dans son fauteuil.")
 def _():
     o = set_bedroom(lit=True, photos=True)
     o += door(120, 540, 120, 260, "ajar")
@@ -949,7 +950,7 @@ def _():
     return finish(o)
 
 
-@scene("85", "Dans l'entrée, Mme Morticia tend son manteau au héros ; dans le miroir, un instant, le reflet d'Henri.")
+@scene("86", "Dans l'entrée, Mme Morticia tend son manteau au héros ; dans le miroir, un instant, le reflet d'Henri.")
 def _():
     reflection = hero(150, 330, 0.5, expr="surprised") + morticia(205, 330, 0.48) + henri(180, 300, 0.45, expr="smile", ghost=True)
     o = set_hall(reflection)
@@ -959,7 +960,7 @@ def _():
     return finish(o)
 
 
-@scene("86", "Fin : la pendule figée à 23 h 44.")
+@scene("87", "Fin : la pendule figée à 23 h 44.")
 def _():
     o = set_fin("#1e1a33") + clock(480, 340, 3.6)
     return finish(o)

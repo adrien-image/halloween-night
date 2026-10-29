@@ -21,13 +21,13 @@ CHOICE_RE = re.compile(r"^(#+\s*)?\**\s*(CHOIX\s+([AB][\d.]*))\s*(:?)\s*\**\s*(:
 
 # Où mène chaque choix (première page de sa conséquence).
 TARGETS = {
-    "A": "13", "B": "50",
-    "A.1": "20", "A.2": "34",
-    "A.1.1": "24", "A.1.2": "28",
-    "A.2.1": "38", "A.2.2": "44",
-    "B.1": "56", "B.2": "73",
-    "B.1.1": "59", "B.1.2": "65",
-    "B.2.1": "77", "B.2.2": "81",
+    "A": "13", "B": "51",
+    "A.1": "21", "A.2": "35",
+    "A.1.1": "25", "A.1.2": "29",
+    "A.2.1": "39", "A.2.2": "45",
+    "B.1": "57", "B.2": "74",
+    "B.1.1": "60", "B.1.2": "66",
+    "B.2.1": "78", "B.2.2": "82",
 }
 
 
@@ -54,11 +54,7 @@ def main():
     for line in lines:
         m = PAGE_RE.match(line.strip())
         if m:
-            num = m.group(1)
-            pid = num
-            while any(p["id"] == pid for p in pages):  # « PAGE 15 » apparaît deux fois
-                pid += "b"
-            cur = {"id": pid, "lines": []}
+            cur = {"id": m.group(1), "lines": []}
             pages.append(cur)
         elif cur is not None:
             if SEPARATOR_RE.match(line.strip()) or IF_CHOICE_RE.match(line.strip()):
