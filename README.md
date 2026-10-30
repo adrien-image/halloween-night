@@ -5,8 +5,8 @@ Histoire interactive dont vous êtes le héros, publiée sur GitHub Pages.
 - `story/Halloween_version_2.md` : le texte source de l'histoire.
 - `tools/build_story.py` : transforme le texte source en `story.js` (texte repris tel quel).
 - `tools/art.py` + `tools/generate_images.py` : génèrent une illustration SVG par slide
-  dans `images/`, dans un style cartoon cell-shaded commun (mêmes personnages, décors
-  et palette). La description (« prompt ») de chaque image est dans `images/prompts.json`.
+  dans `images/`, imprimées « en risographie » (dessin cartoon réduit à six encres sur
+  papier crème, décalage de repérage, trame et grain ; mêmes personnages et décors). La description (« prompt ») de chaque image est dans `images/prompts.json`.
 - `index.html`, `style.css`, `app.js` : le site.
 
 Le workflow `.github/workflows/pages.yml` régénère et redéploie le site à chaque push.

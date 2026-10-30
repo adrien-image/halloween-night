@@ -17,8 +17,9 @@ import art  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "images"
 
-STYLE = ("Illustration cartoon cell-shaded, contours épais violet-noir, aplats de couleurs "
-         "avec une seule ombre dure par forme, palette nocturne violet et orange citrouille. "
+STYLE = ("Affiche imprimée en risographie : dessin cartoon à contours épais réduit à six encres "
+         "(violet nuit, prune, magenta, orange citrouille, pêche) sur papier crème, léger décalage "
+         "de repérage, trame de demi-teinte et grain du papier. "
          "Personnages récurrents : le héros déguisé en vampire (teint blafard, cheveux noirs "
          "en pointe, cape noire à col rouge, nœud papillon rouge), Mme Morticia / Yvonne "
          "(vieille dame, chignon blanc, robe prune, collier de perles avec une clé), Henri "
@@ -194,7 +195,8 @@ def set_fin(color="#2a1a40"):
 
 
 def finish(o, vig=True):
-    return o + (vignette() if vig else "")
+    # pas de vignettage : réduit à quelques encres, il formerait un ovale dur
+    return print_finish(o)
 
 
 # =============================================================== scènes

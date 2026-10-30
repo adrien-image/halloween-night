@@ -95,6 +95,58 @@ def text(x, y, txt, size=40, color="#fff", weight=800, anchor="middle", extra=""
             f'paint-order="stroke" {extra}>{txt}</text>')
 
 
+# ---------------------------------------------------------------- impression risographie
+# Encres : du plus sombre au plus clair (luminance -> encre), papier crème en dernier.
+INKS = ["#1f1433", "#3d2466", "#8a3f7a", "#ff6b2c", "#ffb07a", "#f6ecd8"]
+PAPER_COLOR = INKS[-1]
+
+
+def _table(channel):
+    return " ".join(f"{int(c[1 + 2 * channel:3 + 2 * channel], 16) / 255:.3f}" for c in INKS)
+
+
+PRINT_DEFS = (
+    '<defs>'
+    # 1. luminance, ombres relevées (les fonds tombent sur l'encre prune, les contours restent noirs),
+    #    puis réduction à 6 encres
+    '<filter id="riso" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">'
+    '<feColorMatrix type="matrix" values="0.3 0.59 0.11 0 0  0.3 0.59 0.11 0 0  0.3 0.59 0.11 0 0  0 0 0 1 0" result="lum"/>'
+    '<feComponentTransfer in="lum" result="contrast">'
+    '<feFuncR type="gamma" amplitude="1.05" exponent="0.62" offset="-0.02"/>'
+    '<feFuncG type="gamma" amplitude="1.05" exponent="0.62" offset="-0.02"/>'
+    '<feFuncB type="gamma" amplitude="1.05" exponent="0.62" offset="-0.02"/></feComponentTransfer>'
+    '<feComponentTransfer in="contrast" result="ink">'
+    f'<feFuncR type="discrete" tableValues="{_table(0)}"/><feFuncG type="discrete" tableValues="{_table(1)}"/>'
+    f'<feFuncB type="discrete" tableValues="{_table(2)}"/></feComponentTransfer>'
+    # 2. second passage légèrement décalé (défaut de repérage)
+    '<feOffset in="ink" dx="3" dy="2" result="shift"/>'
+    '<feComposite in="shift" operator="arithmetic" k2="0.35" k4="0.65" result="ghost"/>'
+    '<feBlend in="ink" in2="ghost" mode="multiply" result="printed"/>'
+    # 3. grain du papier et encre irrégulière
+    '<feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="noise"/>'
+    '<feColorMatrix in="noise" type="saturate" values="0" result="grey"/>'
+    '<feComposite in="printed" in2="grey" operator="arithmetic" k2="1" k3="0.16" k4="-0.08"/>'
+    '</filter>'
+    # trame de demi-teinte
+    '<pattern id="halftone" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(22)">'
+    f'<circle cx="3" cy="3" r="1.3" fill="{INKS[1]}"/></pattern>'
+    # fibres du papier
+    '<filter id="fibres"><feTurbulence type="fractalNoise" baseFrequency="0.35" numOctaves="3" seed="3"/>'
+    '<feColorMatrix values="0 0 0 0 0.24  0 0 0 0 0.14  0 0 0 0 0.4  0 0 0 -1.8 1"/></filter>'
+    '</defs>'
+)
+
+
+def print_finish(content):
+    """Imprime la scène en risographie : encres limitées, décalage, trame et papier."""
+    return (PRINT_DEFS
+            + f'<g filter="url(#riso)">{content}</g>'
+            + f'<rect width="{W}" height="{H}" fill="url(#halftone)" opacity="0.18" style="mix-blend-mode:multiply"/>'
+            + f'<rect width="{W}" height="{H}" filter="url(#fibres)" opacity="0.18"/>'
+            # marge blanche irrégulière, comme une feuille imprimée
+            + f'<rect x="4" y="4" width="{W - 8}" height="{H - 8}" fill="none" stroke="{PAPER_COLOR}" stroke-width="10" rx="6"/>')
+
+
 def svg(content):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
             f'width="{W}" height="{H}">{content}</svg>\n')
