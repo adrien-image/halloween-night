@@ -17,8 +17,9 @@ import art  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "images"
 
-STYLE = ("Illustration cartoon cell-shaded, contours épais violet-noir, aplats de couleurs "
-         "avec une seule ombre dure par forme, palette nocturne violet et orange citrouille. "
+STYLE = ("Illustration semi-réaliste, modelé doux en dégradés, contours fins, proportions "
+         "naturelles, ombres portées floues, textures de bois, de papier peint et grain de film, "
+         "lumières diffuses, palette nocturne violet et orange citrouille. "
          "Personnages récurrents : le héros déguisé en vampire (teint blafard, cheveux noirs "
          "en pointe, cape noire à col rouge, nœud papillon rouge), Mme Morticia / Yvonne "
          "(vieille dame, chignon blanc, robe prune, collier de perles avec une clé), Henri "
@@ -153,6 +154,8 @@ def set_bedroom(lit=False, photos=False):
         for (x, y, w, h, t) in ((90, 90, 70, 90, -3), (180, 70, 60, 70, 2), (100, 210, 60, 70, 3), (190, 180, 80, 100, -2),
                                 (700, 90, 70, 90, 2), (800, 80, 60, 70, -3), (720, 210, 80, 70, -1), (820, 200, 60, 80, 3)):
             o += frame_wall(x, y, w, h, "couple", t)
+    # lumière du lampadaire projetée au sol
+    o += fill(POLY((380, 470), (580, 470), (660, 600), (330, 600)), "#ffe9a0", 'opacity="0.12" filter="url(#blur20)"')
     o += bed(860, 520, 0.8)
     if not lit:
         o += darken(0.35)
@@ -194,7 +197,11 @@ def set_fin(color="#2a1a40"):
 
 
 def finish(o, vig=True):
-    return o + (vignette() if vig else "")
+    """Passe finale commune : lumière d'ambiance chaude, vignettage et grain de film."""
+    o += glow(W * 0.3, H * 0.25, 520, "#ffcf9a", 0.12)
+    o += vignette() if vig else ""
+    o += '<rect width="960" height="600" filter="url(#grain)" opacity="0.12" style="mix-blend-mode:overlay"/>'
+    return o
 
 
 # =============================================================== scènes
@@ -973,7 +980,7 @@ def main():
     for slide in story:
         pid = slide["id"]
         desc, fn = SCENES[pid]
-        art._ids = __import__("itertools").count()
+        art.reset()
         body = fn()
         content = f"<title>{desc}</title><desc>{STYLE}</desc>" + body
         (OUT_DIR / f"page-{pid}.svg").write_text(svg(content), encoding="utf-8")
