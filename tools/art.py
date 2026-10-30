@@ -1,8 +1,9 @@
 """Bibliothèque de dessin SVG commune à toutes les illustrations.
 
-Style unique : cartoon « cell-shaded » — contours épais violet-noir, aplats de
-couleur, une seule ombre dure par forme (lumière venant d'en haut à gauche),
-palette nocturne violet / orange citrouille.
+Style unique : illustration semi-réaliste — modelé doux en dégradés (lumière
+venant d'en haut à gauche), contours fins, proportions plus naturelles, ombres
+portées floues, textures (bois, papier, grain) et lumières diffuses, palette
+nocturne violet / orange citrouille.
 
 Chaque personnage est toujours dessiné par la même fonction, avec les mêmes
 couleurs et proportions, ce qui garantit leur cohérence d'une image à l'autre.
@@ -12,10 +13,20 @@ import math
 
 W, H = 960, 600
 OUT = "#1b1226"     # couleur des contours
-SW = 4              # épaisseur des contours
+SW = 2.5            # épaisseur des contours
+HEAD = 0.86         # échelle des têtes (proportions plus naturelles)
 FLOOR = 540         # ligne du sol par défaut
+PRINT_MODE = False  # impression risographie : les textures de bruit sont remplacées par la trame
 
 _ids = itertools.count()
+_grads = {}
+
+
+def reset():
+    """À appeler avant chaque image : les identifiants SVG repartent de zéro."""
+    global _ids, _grads
+    _ids = itertools.count()
+    _grads = {}
 
 
 def uid(prefix="c"):
@@ -53,25 +64,57 @@ def fill(shape, color, extra=""):
     return f'<g fill="{color}" {st} {extra}>{shape}</g>'
 
 
+def mix(c1, c2, t):
+    """Mélange deux couleurs hexadécimales (t = 0 -> c1, t = 1 -> c2)."""
+    c1, c2 = (c if len(c) == 7 else "#" + "".join(ch * 2 for ch in c[1:]) for c in (c1, c2))
+    a = [int(c1[i:i + 2], 16) for i in (1, 3, 5)]
+    b = [int(c2[i:i + 2], 16) for i in (1, 3, 5)]
+    return "#" + "".join(f"{round(x + (y - x) * t):02x}" for x, y in zip(a, b))
+
+
+def shading(base, shade, radial):
+    """Dégradé de modelé (reflet -> couleur -> ombre), partagé dans l'image."""
+    key = (base, shade, radial)
+    if key in _grads:
+        return _grads[key], ""
+    gid = uid("m")
+    _grads[key] = gid
+    hi = mix(base, "#fff4e0", 0.22)
+    dark = mix(shade, "#0b0614", 0.25)
+    if radial:
+        d = (f'<radialGradient id="{gid}" cx="0.36" cy="0.3" r="0.8">'
+             f'<stop offset="0" stop-color="{hi}"/><stop offset="0.45" stop-color="{base}"/>'
+             f'<stop offset="0.85" stop-color="{shade}"/><stop offset="1" stop-color="{dark}"/></radialGradient>')
+    else:
+        d = (f'<linearGradient id="{gid}" x1="0.1" y1="0" x2="0.9" y2="1">'
+             f'<stop offset="0" stop-color="{hi}"/><stop offset="0.4" stop-color="{base}"/>'
+             f'<stop offset="1" stop-color="{shade}"/></linearGradient>')
+    return gid, f"<defs>{d}</defs>"
+
+
 def cel(shape, base, shade, dx=7, dy=6, sw=SW):
-    """Aplat + ombre dure en bas à droite (cell-shading) + contour."""
-    cid = uid()
-    return (
-        f'<clipPath id="{cid}">{shape}</clipPath>'
-        f'<g clip-path="url(#{cid})" stroke="none">'
-        f'<g fill="{shade}">{shape}</g>'
-        f'<g fill="{base}" transform="translate({-dx},{-dy})">{shape}</g></g>'
-        + (f'<g fill="none" stroke="{OUT}" stroke-width="{sw}" '
-           f'stroke-linejoin="round">{shape}</g>' if sw else "")
-    )
+    """Forme modelée en dégradé doux (lumière en haut à gauche) + contour fin."""
+    gid, defs = shading(base, shade, shape.startswith("<ellipse"))
+    st = (f'stroke="{OUT}" stroke-opacity="0.8" stroke-width="{min(sw, SW)}" stroke-linejoin="round"'
+          if sw else 'stroke="none"')
+    return f'{defs}<g fill="url(#{gid})" {st}>{shape}</g>'
 
 
 def tube(d, color, w=16, sw=SW):
-    """Membre (bras, jambe) : trait épais avec contour."""
-    return (f'<path d="{d}" fill="none" stroke="{OUT}" stroke-width="{w + 2 * sw}" '
+    """Membre (bras, jambe) : trait épais avec contour, ombre et reflet."""
+    return (f'<path d="{d}" fill="none" stroke="{OUT}" stroke-opacity="0.85" stroke-width="{w + 2 * sw}" '
             f'stroke-linecap="round" stroke-linejoin="round"/>'
-            f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{w}" '
-            f'stroke-linecap="round" stroke-linejoin="round"/>')
+            f'<path d="{d}" fill="none" stroke="{mix(color, "#0b0614", 0.35)}" stroke-width="{w}" '
+            f'stroke-linecap="round" stroke-linejoin="round"/>'
+            f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{w * 0.7}" transform="translate(-1.5,-1)" '
+            f'stroke-linecap="round" stroke-linejoin="round"/>'
+            f'<path d="{d}" fill="none" stroke="{mix(color, "#fff4e0", 0.3)}" stroke-width="{w * 0.2}" '
+            f'transform="translate(-{w * 0.25},-1)" stroke-opacity="0.6" stroke-linecap="round" stroke-linejoin="round"/>')
+
+
+def contact(w, h=None, y=0, op=0.45):
+    """Ombre portée floue au sol."""
+    return f'<ellipse cx="0" cy="{y}" rx="{w}" ry="{h or w * 0.16}" fill="#06030c" opacity="{op}" filter="url(#blur6)"/>'
 
 
 def line(d, w=SW, color=OUT, extra=""):
@@ -137,6 +180,23 @@ PRINT_DEFS = (
 )
 
 
+DEFS = (
+    '<defs>'
+    '<filter id="blur2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2"/></filter>'
+    '<filter id="blur6" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>'
+    '<filter id="blur20" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="20"/></filter>'
+    '<filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/>'
+    '<feColorMatrix type="saturate" values="0"/></filter>'
+    '<filter id="woodgrain"><feTurbulence type="fractalNoise" baseFrequency="0.004 0.12" numOctaves="3" seed="4"/>'
+    '<feColorMatrix values="0 0 0 0 0.12  0 0 0 0 0.06  0 0 0 0 0.02  0 0 0 -2.2 1.4"/></filter>'
+    '<filter id="fabric"><feTurbulence type="fractalNoise" baseFrequency="0.6 0.05" numOctaves="2" seed="9"/>'
+    '<feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.6 1.1"/></filter>'
+    '<filter id="mottle"><feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="3" seed="2"/>'
+    '<feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.4 0.9"/></filter>'
+    '</defs>'
+)
+
+
 def print_finish(content):
     """Imprime la scène en risographie : encres limitées, décalage, trame et papier."""
     return (PRINT_DEFS
@@ -147,9 +207,16 @@ def print_finish(content):
             + f'<rect x="4" y="4" width="{W - 8}" height="{H - 8}" fill="none" stroke="{PAPER_COLOR}" stroke-width="10" rx="6"/>')
 
 
+def texture(kind, x=0, y=0, w=W, h=H, op=0.3):
+    """Surcouche de texture (woodgrain, fabric, mottle) sur une zone."""
+    if PRINT_MODE:  # réduites à quelques encres, elles formeraient des taches
+        return ""
+    return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" filter="url(#{kind})" opacity="{op}"/>'
+
+
 def svg(content):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
-            f'width="{W}" height="{H}">{content}</svg>\n')
+            f'width="{W}" height="{H}">{DEFS}{content}</svg>\n')
 
 
 # ---------------------------------------------------------------- palette
@@ -175,13 +242,16 @@ GLASS = "#bfe6f5"
 
 
 # ---------------------------------------------------------------- visages communs
-def eye(x, y, rx=9, ry=10, px=0, py=1, pr=4, white="#fff"):
-    return flat(E(x, y, rx, ry), white, sw=3) + fill(E(x + px, y + py, pr, pr), OUT)
+def eye(x, y, rx=9, ry=10, px=0, py=1, pr=4, white="#fff", iris="#6b4a2e"):
+    ir = pr * 1.45
+    return (flat(E(x, y, rx, ry), white, sw=2) + fill(E(x, y - ry * 0.45, rx * 0.9, ry * 0.4), "#b9b3c4", 'opacity="0.45"')
+            + fill(E(x + px, y + py, ir, ir), iris) + fill(E(x + px, y + py, pr * 0.65, pr * 0.65), OUT)
+            + fill(E(x + px - ir * 0.35, y + py - ir * 0.4, max(1, pr * 0.32)), "#fff", 'opacity="0.9"'))
 
 
 def arc_eye(x, y, w=8, up=True):
     k = -8 if up else 8
-    return line(f"M{x - w},{y} Q{x},{y + k} {x + w},{y}", 4)
+    return line(f"M{x - w},{y} Q{x},{y + k} {x + w},{y}", 3)
 
 
 def fangs(x, y, size=8):
@@ -194,13 +264,19 @@ def sweat(x, y, s=1):
 
 
 def cheeks(xs, y, color="#f29a9a"):
-    return "".join(fill(E(x, y, 8, 5), color, 'opacity="0.7"') for x in xs)
+    return "".join(fill(E(x, y, 9, 6), color, 'opacity="0.45" filter="url(#blur2)"') for x in xs)
+
+
+def nose(y, w=6, color="#000"):
+    """Arête et narine suggérées par une ombre douce."""
+    return (line(f"M2,{y - 14} Q6,{y - 2} {w},{y} Q2,{y + 4} -3,{y + 1}", 2, color, 'stroke-opacity="0.35"')
+            + fill(E(0, y + 4, w + 2, 3), color, 'opacity="0.12" filter="url(#blur2)"'))
 
 
 # ---------------------------------------------------------------- héros (vampire)
 def hero(x, y, s=1, flip=False, expr="neutral", pose="stand", legs="stand",
          item=None, bite=False, opacity=None):
-    o = []
+    o = [contact(70, y=-4)]
     dy = 40 if legs == "sit" else 0
     sk, sk_sh = SKIN_HERO
 
@@ -230,8 +306,8 @@ def hero(x, y, s=1, flip=False, expr="neutral", pose="stand", legs="stand",
     up = []
     up.append(cel(cape, *CAPE))
     # col rouge de la cape
-    up.append(cel(P("M-30,-186 L-74,-272 L-18,-208 Z"), *RED, dx=3, dy=3))
-    up.append(cel(P("M30,-186 L74,-272 L18,-208 Z"), *RED, dx=3, dy=3))
+    up.append(cel(P("M-30,-186 L-62,-250 L-18,-206 Z"), *RED, dx=3, dy=3))
+    up.append(cel(P("M30,-186 L62,-250 L18,-206 Z"), *RED, dx=3, dy=3))
     # buste
     up.append(cel(P("M-36,-182 Q0,-190 36,-182 L32,-88 Q0,-80 -32,-88 Z"), *JACKET))
     up.append(flat(POLY((-13, -184), (13, -184), (0, -140)), "#f4f0f7", 3))
@@ -240,13 +316,17 @@ def hero(x, y, s=1, flip=False, expr="neutral", pose="stand", legs="stand",
     if bite:
         up.append(fill(E(-5, -189, 2.6) + E(5, -189, 2.6), "#5a0d18"))
     # oreilles pointues + tête
-    up.append(cel(P("M-36,-240 L-58,-262 L-38,-218 Z"), sk, sk_sh, 3, 3))
-    up.append(cel(P("M36,-240 L58,-262 L38,-218 Z"), sk, sk_sh, 3, 3))
-    up.append(cel(E(0, -234, 40, 46), sk, sk_sh))
-    # cheveux plaqués en pointe
-    up.append(cel(P("M-42,-236 C-52,-294 52,-294 42,-236 L30,-258 L14,-252 L0,-238 L-14,-252 L-30,-258 Z"),
-                  "#1f1a33", "#0d0a16", 5, 4))
-    up.append(hero_face(expr))
+    head = [cel(P("M-36,-240 L-58,-262 L-38,-218 Z"), sk, sk_sh, 3, 3),
+            cel(P("M36,-240 L58,-262 L38,-218 Z"), sk, sk_sh, 3, 3),
+            cel(E(0, -234, 40, 46), sk, sk_sh),
+            fill(E(0, -196, 30, 8), "#3a4a36", 'opacity="0.35" filter="url(#blur2)"'),
+            # cheveux plaqués en pointe
+            cel(P("M-42,-236 C-52,-294 52,-294 42,-236 L30,-258 L14,-252 L0,-238 L-14,-252 L-30,-258 Z"),
+                "#2a2342", "#0d0a16", 5, 4),
+            line("M-30,-262 Q-10,-282 12,-276 M-20,-250 Q0,-272 26,-266", 1.5, "#6a5f8a", 'stroke-opacity="0.6"'),
+            g(nose(-222, 5, "#3a4a36")),
+            hero_face(expr)]
+    up.append(head_group(head, -198))
 
     # bras
     A = HERO_ARMS.get(pose, HERO_ARMS["stand"])
@@ -262,6 +342,11 @@ def hero(x, y, s=1, flip=False, expr="neutral", pose="stand", legs="stand",
     return g("".join(o), x, y, s, flip, opacity)
 
 
+def head_group(parts, neck_y):
+    """Réduit la tête autour du cou pour des proportions plus naturelles."""
+    return g("".join(parts), 0, round(neck_y * (1 - HEAD), 1), HEAD)
+
+
 HERO_ARMS = {
     "stand": {"arms": ["M-34,-172 Q-50,-130 -46,-98", "M34,-172 Q50,-130 46,-98"],
               "hands": [(-46, -95), (46, -95)], "item": (46, -95)},
@@ -271,8 +356,8 @@ HERO_ARMS = {
               "hands": [(-16, -124), (16, -124)], "item": (0, -128)},
     "scared": {"arms": ["M-34,-172 Q-74,-190 -52,-246", "M34,-172 Q74,-190 52,-246"],
                "hands": [(-52, -248), (52, -248)], "item": (52, -248)},
-    "phone": {"arms": ["M-34,-172 Q-50,-130 -46,-98", "M34,-172 Q66,-206 40,-232"],
-              "hands": [(-46, -95), (40, -234)], "item": (44, -240)},
+    "phone": {"arms": ["M-34,-172 Q-50,-130 -46,-98", "M34,-172 Q62,-200 36,-216"],
+              "hands": [(-46, -95), (36, -218)], "item": (40, -224)},
     "cape": {"arms": ["M-34,-172 L-96,-150", "M34,-172 L96,-150"],
              "hands": [(-98, -150), (98, -150)], "item": (98, -150)},
     "reach": {"arms": ["M-34,-172 Q-50,-130 -46,-98", "M34,-172 L104,-158"],
@@ -349,22 +434,31 @@ def morticia(x, y, s=1, flip=False, expr="smile", pose="fold", item=None,
              key=True, ghost=False, opacity=None):
     sk = GHOST if ghost else SKIN_OLD
     dress = ("#8fa9c4", "#6c87a3") if ghost else PLUM
-    o = []
+    o = [contact(66, y=-2)]
     o.append(cel(P("M-30,-178 Q0,-186 30,-178 L60,-4 Q0,6 -60,-4 Z"), *dress))
+    o.append(line("M-14,-150 Q-24,-80 -36,-6 M12,-140 Q18,-70 30,-4 M0,-120 L2,-4", 2, mix(dress[1], "#000", 0.3), 'stroke-opacity="0.5"'))
     o.append(flat(P("M-22,-180 Q0,-160 22,-180 L16,-168 Q0,-152 -16,-168 Z"), "#e6dcef", 3))
     o.append(flat(R(-8, -192, 16, 16), sk[0], 3))
     # cheveux (chignon) + tête
-    o.append(cel(E(0, -258, 18, 16), *WHITE, 4, 4))
-    o.append(cel(E(0, -214, 34, 38), *sk))
-    o.append(cel(P("M-37,-208 C-42,-262 42,-262 37,-208 C32,-238 10,-244 0,-236 C-10,-244 -32,-238 -37,-208 Z"),
-                 *WHITE, 4, 4))
-    o.append(morticia_face(expr))
+    hair_line = 'stroke-opacity="0.5"'
+    o.append(head_group([
+        cel(E(0, -258, 18, 16), *WHITE, 4, 4),
+        line("M-10,-262 Q0,-270 10,-262 M-12,-254 Q0,-262 12,-254", 1.5, "#a29cb4", hair_line),
+        cel(E(0, -214, 34, 38), *sk),
+        fill(E(0, -178, 24, 6), "#6b4a3a", 'opacity="0.3" filter="url(#blur2)"'),
+        cel(P("M-37,-208 C-42,-262 42,-262 37,-208 C32,-238 10,-244 0,-236 C-10,-244 -32,-238 -37,-208 Z"),
+            *WHITE, 4, 4),
+        line("M-30,-222 Q-20,-246 -2,-240 M30,-222 Q20,-246 2,-240 M-34,-214 Q-30,-236 -16,-242", 1.5, "#a29cb4", hair_line),
+        g(nose(-203, 5, "#7a4a3a")),
+        line("M-8,-236 Q0,-238 8,-236 M-10,-232 Q0,-234 10,-232", 1, "#8a5a4a", 'stroke-opacity="0.4"'),
+        morticia_face(expr),
+    ], -180))
     # collier de perles
     for i in range(9):
         t = i / 8
         px = -22 + 44 * t
         py = -178 + 22 * (1 - (2 * t - 1) ** 2)
-        o.append(flat(E(round(px, 1), round(py, 1), 3.6), "#fbf8ff", 1.5))
+        o.append(cel(E(round(px, 1), round(py, 1), 3.6), "#fbf8ff", "#b9b0c9", 1, 1, 1))
     if key:
         o.append(g(prop("key"), 0, -146, 0.55, rot=90))
     A = MORTICIA_ARMS.get(pose, MORTICIA_ARMS["fold"])
@@ -441,7 +535,10 @@ def henri(x, y, s=1, flip=False, expr="smile", pose="stand", legs="stand", item=
     o = []
     dy = 40 if legs == "sit" else 0
     if float_:
-        o.append(fill(E(0, -2, 46, 8), "#9fdcf5", 'opacity="0.35"'))
+        o.append(f'<g transform="translate(0,18)">{contact(56, op=0.3)}</g>')
+        o.append(fill(E(0, -2, 46, 8), "#9fdcf5", 'opacity="0.35" filter="url(#blur6)"'))
+    else:
+        o.append(contact(70, y=-4))
     if legs == "stand":
         o.append(tube("M-15,-94 L-17,-10", trou[0], 19))
         o.append(tube("M15,-94 L17,-10", trou[0], 19))
@@ -455,7 +552,10 @@ def henri(x, y, s=1, flip=False, expr="smile", pose="stand", legs="stand", item=
     up.append(flat(POLY((-13, -188), (13, -188), (0, -146)), "#f4f0f7", 3))
     up.append(flat(POLY((-4, -180), (4, -180), (6, -152), (0, -146), (-6, -152)), "#3f6b4f", 2))
     for by in (-132, -112):
-        up.append(flat(E(0, by, 3.5), "#5a3a1a", 2))
+        up.append(flat(E(0, by, 3.5), "#5a3a1a", 1.5))
+    # mailles du gilet
+    up.append(line("M-30,-170 L-28,-96 M-20,-176 L-18,-92 M20,-176 L18,-92 M30,-170 L28,-96", 1.5,
+                   mix(cardi[1], "#000", 0.2), 'stroke-opacity="0.45"'))
     up.append(flat(R(-10, -200, 20, 18), sk[0], 3))
     hr = 1.12 if expr == "swollen" else 1
     head = []
@@ -466,10 +566,14 @@ def henri(x, y, s=1, flip=False, expr="smile", pose="stand", legs="stand", item=
         head.append(cel(P("M-38,-240 C-44,-290 44,-290 38,-240 C30,-262 -30,-262 -38,-240 Z"), *hair, 4, 4))
     else:
         head.append(cel(E(-36, -250, 9, 15), *hair, 3, 3) + cel(E(36, -250, 9, 15), *hair, 3, 3))
-        head.append(fill(E(-12, -266, 9, 5), "#fff", 'opacity="0.6"'))
+        head.append(fill(E(-12, -264, 10, 6), "#fff", 'opacity="0.5" filter="url(#blur2)"'))
+        head.append(fill(E(10, -230, 12, 8) + E(-30, -214, 6, 4) + E(26, -258, 4, 3), "#a0664a", 'opacity="0.18"'))
+    # rides du front
+    head.append(line("M-20,-260 Q0,-266 20,-260 M-16,-252 Q0,-257 16,-252", 1.5, "#8a5a44", 'stroke-opacity="0.45"'))
+    head.append(fill(E(0, -196, 30, 8), "#5a3a2a", 'opacity="0.3" filter="url(#blur2)"'))
     head.append(henri_face(expr, fangs_, young))
-    # tête agrandie (visage gonflé) autour de son centre
-    up.append(g("".join(head), 0, round((1 - hr) * -236, 1), hr))
+    # tête agrandie (visage gonflé) autour de son centre, puis proportions naturelles
+    up.append(head_group([g("".join(head), 0, round((1 - hr) * -236, 1), hr)], -200))
     A = HENRI_ARMS.get(pose, HENRI_ARMS["stand"])
     for d in A["arms"]:
         up.append(tube(d, cardi[0], 16))
@@ -580,6 +684,8 @@ def henri_face(expr, fangs_=False, young=False):
         o.append(line(f"M-10,{my + 3} L10,{my + 3}"))
     if fangs_ or expr == "hungry":
         o.append(fangs(0, my - 1, 11))
+    o.append(line("M-24,-218 Q-30,-206 -26,-196 M24,-218 Q30,-206 26,-196", 1.5, "#8a5a44", 'stroke-opacity="0.45"'))
+    o.append(line("M-30,-244 l-5,-3 M-30,-238 l-6,0 M30,-244 l5,-3 M30,-238 l6,0", 1.2, "#8a5a44", 'stroke-opacity="0.5"'))
     # moustache
     o.append(cel(P(f"M-28,-208 Q-16,-222 0,-212 Q16,-222 28,-208 Q18,-200 0,-206 Q-18,-200 -28,-208 Z"), *mus, 2, 3, 3))
     return "".join(o)
@@ -594,7 +700,7 @@ def henri_head_back(x, y, s=1):
 
 # ---------------------------------------------------------------- Minou
 def cat(x, y, s=1, flip=False, pose="sit", ears_up=False, opacity=None):
-    o = []
+    o = [contact(36, y=-3)]
     c, sh = CAT
     if pose == "sit":
         o.append(tube("M18,-8 Q56,-6 48,-44 Q46,-60 56,-66", c, 10))
@@ -625,10 +731,12 @@ def _cat_head(ears_up=False):
     c, sh = CAT
     ear = -30 if ears_up else -24
     o = cel(POLY((-20, -6), (-18, ear), (-4, -14)), c, sh, 2, 2, 3)
+    o += fill(POLY((-17, -9), (-16, ear + 6), (-8, -14)) + POLY((17, -9), (16, ear + 6), (8, -14)), "#6b4a5a", 'opacity="0.6"')
     o += cel(POLY((20, -6), (18, ear), (4, -14)), c, sh, 2, 2, 3)
     o += cel(E(0, 0, 22, 19), c, sh, 4, 4)
     for ex in (-9, 9):
-        o += flat(E(ex, -2, 5, 6), "#f6d743", 2) + fill(E(ex, -2, 1.4, 4.5), OUT)
+        o += flat(E(ex, -2, 5, 6), "#f6d743", 1.5) + fill(E(ex, 0, 4, 3), "#c79a1d", 'opacity="0.6"')
+        o += fill(E(ex, -2, 1.4, 4.5), OUT) + fill(E(ex - 1.8, -4.5, 1.2), "#fff")
     o += fill(POLY((-3, 5), (3, 5), (0, 8)), "#f29ab0")
     o += line("M6,7 L22,4", 1.5, "#ccc") + line("M-6,7 L-22,4", 1.5, "#ccc")
     return o
@@ -638,7 +746,7 @@ def _cat_head(ears_up=False):
 def person(x, y, s=1, flip=False, skin=("#f0c8a0", "#c9996e"), top=("#3a7bd5", "#25549a"),
            bottom=TROUSERS, hair=("#5a3a22", "#3a2414"), hat=None, expr="happy",
            arms="up", head=None, opacity=None):
-    o = []
+    o = [contact(60, y=-4)]
     o.append(tube("M-13,-90 L-15,-10", bottom[0], 17) + tube("M13,-90 L15,-10", bottom[0], 17))
     o.append(flat(E(-20, -7, 15, 7) + E(20, -7, 15, 7), "#222", 3))
     o.append(cel(P("M-32,-176 Q0,-184 32,-176 L30,-86 Q0,-78 -30,-86 Z"), *top))
@@ -652,6 +760,7 @@ def person(x, y, s=1, flip=False, skin=("#f0c8a0", "#c9996e"), top=("#3a7bd5", "
     for hx, hy in ends:
         o.append(cel(E(hx, hy, 8, 8), *skin, 2, 2, 3))
     o.append(flat(R(-8, -192, 16, 16), skin[0], 3))
+    h0 = len(o)
     if head == "pumpkin":
         o.append(cel(E(0, -226, 44, 38), *ORANGE))
         o.append(line("M0,-264 Q4,-276 12,-278", 6, "#3f6b2a"))
@@ -660,6 +769,7 @@ def person(x, y, s=1, flip=False, skin=("#f0c8a0", "#c9996e"), top=("#3a7bd5", "
     else:
         o.append(cel(E(0, -226, 34, 38), *skin))
         o.append(cel(P("M-36,-226 C-40,-276 40,-276 36,-226 C24,-246 -24,-246 -36,-226 Z"), *hair, 4, 4))
+        o.append(g(nose(-214, 4, "#000")))
         if expr == "happy":
             o += [arc_eye(-12, -228, 6), arc_eye(12, -228, 6)]
             o.append(flat(P("M-11,-210 Q0,-198 11,-210 Z"), "#6b1f2a", 3))
@@ -674,11 +784,12 @@ def person(x, y, s=1, flip=False, skin=("#f0c8a0", "#c9996e"), top=("#3a7bd5", "
         o.append(flat(R(-30, -266, 60, 8), "#7d4fbf", 3))
     elif hat == "cap":
         o.append(cel(P("M-36,-244 C-36,-276 36,-276 36,-244 L60,-244 L60,-238 L-36,-238 Z"), "#e8502a", "#b33a1c", 3, 3))
+    o[h0:] = [head_group(o[h0:], -180)]
     return g("".join(o), x, y, s, flip, opacity)
 
 
 def ghost_friend(x, y, s=1, flip=False):
-    o = cel(P("M-42,0 L-44,-120 C-44,-196 44,-196 44,-120 L42,0 L28,-14 L14,0 L0,-14 L-14,0 L-28,-14 Z"), *WHITE)
+    o = contact(50, y=-2, op=0.3) + cel(P("M-42,0 L-44,-120 C-44,-196 44,-196 44,-120 L42,0 L28,-14 L14,0 L0,-14 L-14,0 L-28,-14 Z"), *WHITE)
     o += fill(E(-14, -128, 7, 11) + E(14, -128, 7, 11) + E(0, -98, 8, 10), OUT)
     o += cel(P("M-44,-110 L-74,-150 L-62,-160 L-40,-130 Z"), *WHITE, 2, 2, 3)
     o += cel(P("M44,-110 L74,-150 L62,-160 L40,-130 Z"), *WHITE, 2, 2, 3)
@@ -854,7 +965,10 @@ def sky(top="#1d1438", bottom="#4a2a6e"):
     gid = uid("sky")
     return (f'<defs><linearGradient id="{gid}" x1="0" y1="0" x2="0" y2="1">'
             f'<stop offset="0" stop-color="{top}"/><stop offset="1" stop-color="{bottom}"/></linearGradient></defs>'
-            f'<rect width="{W}" height="{H}" fill="url(#{gid})"/>')
+            f'<rect width="{W}" height="{H}" fill="url(#{gid})"/>'
+            + ("" if PRINT_MODE else
+               fill(E(220, 150, 260, 34) + E(600, 90, 220, 26) + E(820, 230, 200, 30), "#6a4f8f", 'opacity="0.35" filter="url(#blur20)"'))
+            + texture("mottle", op=0.25))
 
 
 def stars(seed=3, n=40, h=300):
@@ -870,8 +984,10 @@ def stars(seed=3, n=40, h=300):
 
 
 def moon(x, y, r=46):
-    return (fill(E(x, y, r * 1.8), "#f6e7a1", 'opacity="0.12"') + cel(E(x, y, r), "#f6e7a1", "#d9c46f", 8, 6)
-            + fill(E(x - 12, y - 10, 8) + E(x + 14, y + 12, 6), "#d9c46f", 'opacity="0.7"'))
+    return (fill(E(x, y, r * 2.2), "#f6e7a1", 'opacity="0.25" filter="url(#blur20)"')
+            + fill(E(x, y, r), "#f6eec0") + fill(E(x + r * 0.25, y + r * 0.2, r * 0.85), "#d9c98a", 'opacity="0.45" filter="url(#blur6)"')
+            + fill(E(x - r * 0.3, y - r * 0.2, r * 0.22) + E(x + r * 0.3, y + r * 0.25, r * 0.15) + E(x + r * 0.1, y - r * 0.45, r * 0.1),
+                   "#c4b276", 'opacity="0.6" filter="url(#blur2)"'))
 
 
 def glow(x, y, r, color="#ffd27a", op=0.25):
@@ -894,9 +1010,18 @@ def vignette():
 
 
 def floor(y=FLOOR - 70, color=WOOD, planks=True):
-    o = cel(R(-10, y, W + 20, H - y + 10), color[0], color[1], 0, -10)
+    gid = uid("fl")
+    o = (f'<defs><linearGradient id="{gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{mix(color[1], "#000", 0.2)}"/>'
+         f'<stop offset="0.35" stop-color="{color[0]}"/><stop offset="1" stop-color="{color[1]}"/></linearGradient></defs>'
+         f'<rect x="0" y="{y}" width="{W}" height="{H - y}" fill="url(#{gid})"/>')
     if planks:
-        o += "".join(line(f"M{x},{y} L{x - 40},{H}", 2, color[1]) for x in range(60, W + 60, 110))
+        o += texture("woodgrain", 0, y, W, H - y, 0.55)
+        o += "".join(line(f"M{x},{y} L{x - 40},{H}", 1.5, mix(color[1], "#000", 0.3), 'stroke-opacity="0.7"') for x in range(60, W + 60, 110))
+    else:
+        o += texture("mottle", 0, y, W, H - y, 0.2)
+    # reflet diffus et occlusion au pied du mur
+    o += fill(E(W / 2, y + 40, W * 0.4, 30), "#fff4e0", 'opacity="0.06" filter="url(#blur20)"')
+    o += fill(R(0, y, W, 14), "#000", 'opacity="0.3" filter="url(#blur6)"')
     return o
 
 
@@ -904,8 +1029,16 @@ def wallpaper(color=("#4f6b58", "#435c4b"), y_end=470, stripes=True):
     o = fill(R(0, 0, W, y_end), color[0])
     if stripes:
         o += "".join(fill(R(x, 0, 22, y_end), color[1]) for x in range(0, W, 64))
-        o += "".join(fill(E(x + 43, y, 4), "#c9b98a", 'opacity="0.5"') for x in range(0, W, 64) for y in range(40, y_end, 80))
-    o += flat(R(-10, y_end - 22, W + 20, 22), WOOD_DARK[0], 3)
+        o += "".join(g(fill(P("M0,-6 Q4,0 0,6 Q-4,0 0,-6 Z"), "#c9b98a", 'opacity="0.4"'), x + 43, y)
+                     for x in range(0, W, 64) for y in range(40, y_end, 80))
+    o += texture("fabric", 0, 0, W, y_end, 0.18) + texture("mottle", 0, 0, W, y_end, 0.3)
+    # pénombre vers le plafond
+    gid = uid("wl")
+    o += (f'<defs><linearGradient id="{gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0.45"/>'
+          f'<stop offset="0.5" stop-color="#000" stop-opacity="0"/></linearGradient></defs>'
+          f'<rect width="{W}" height="{y_end}" fill="url(#{gid})"/>')
+    o += cel(R(-10, y_end - 22, W + 20, 22), *WOOD_DARK, sw=2)
+    o += fill(R(0, y_end - 26, W, 5), "#000", 'opacity="0.25" filter="url(#blur2)"')
     return o
 
 
@@ -925,13 +1058,19 @@ def window(x, y, w, h, kind="night", curtains=True, light=False):
         o += fill(E(x + w * 0.75, y + h * 0.3, min(w, h) * 0.14), "#fff2a8")
     elif kind == "flash":
         o += fill(R(x, y, w, h), "#e9f2ff")
+    # reflet sur la vitre
+    o += fill(POLY((x + w * 0.1, y + h), (x + w * 0.35, y), (x + w * 0.5, y), (x + w * 0.25, y + h)), "#fff", 'opacity="0.07"')
     o += flat(R(x + w / 2 - 3, y, 6, h) + R(x, y + h / 2 - 3, w, 6), WOOD_DARK[0], 2)
     if curtains:
         o += cel(P(f"M{x - 18},{y - 16} L{x + w * 0.28},{y - 16} Q{x + w * 0.1},{y + h * 0.5} {x + w * 0.2},{y + h + 16} L{x - 18},{y + h + 16} Z"),
                  "#7d2a3a", "#561b28")
         o += cel(P(f"M{x + w + 18},{y - 16} L{x + w * 0.72},{y - 16} Q{x + w * 0.9},{y + h * 0.5} {x + w * 0.8},{y + h + 16} L{x + w + 18},{y + h + 16} Z"),
                  "#7d2a3a", "#561b28")
-        o += flat(R(x - 26, y - 22, w + 52, 8, 4), GOLD[1], 3)
+        folds = "".join(f"M{x - 10 + i * w * 0.07},{y - 14} Q{x + i * w * 0.05},{y + h * 0.5} {x + 4 + i * w * 0.05},{y + h + 14} "
+                        f"M{x + w + 10 - i * w * 0.07},{y - 14} Q{x + w - i * w * 0.05},{y + h * 0.5} {x + w - 4 - i * w * 0.05},{y + h + 14} "
+                        for i in range(1, 4))
+        o += line(folds, 2, "#3a0e18", 'stroke-opacity="0.45"')
+        o += cel(R(x - 26, y - 22, w + 52, 8, 4), *GOLD, sw=2)
     return o
 
 
@@ -1027,6 +1166,7 @@ def house_party(x, y, s=1):
 # ---------------------------------------------------------------- meubles
 def armchair_rear(x, y, s=1, color=("#7d2a3a", "#561b28")):
     o = cel(R(-70, -210, 140, 170, 34), *color)
+    o = contact(90, y=-4) + o
     o += cel(R(-62, -70, 124, 34, 10), *color)
     return g(o, x, y, s)
 
@@ -1040,6 +1180,7 @@ def armchair_front(x, y, s=1, color=("#7d2a3a", "#561b28")):
 
 def armchair_back_view(x, y, s=1, occupant=True, color=("#7d2a3a", "#561b28")):
     o = henri_head_back(0, -238, 1) if occupant else ""
+    o = contact(100, y=-4) + o
     o += cel(R(-74, -230, 148, 220, 36), *color)
     o += cel(R(-92, -120, 28, 110, 12), *color) + cel(R(64, -120, 28, 110, 12), *color)
     o += flat(R(-80, -10, 10, 12) + R(70, -10, 10, 12), WOOD_DARK[0], 3)
@@ -1050,6 +1191,7 @@ def armchair_back_view(x, y, s=1, occupant=True, color=("#7d2a3a", "#561b28")):
 
 def sofa_rear(x, y, s=1, color=("#5e3a7a", "#3f2554")):
     o = cel(R(-160, -170, 320, 130, 30), *color)
+    o = contact(190, y=-4) + o
     o += cel(R(-150, -70, 300, 34, 10), *color)
     return g(o, x, y, s)
 
@@ -1062,13 +1204,13 @@ def sofa_front(x, y, s=1, color=("#5e3a7a", "#3f2554")):
 
 
 def table(x, y, w=200, h=90, color=WOOD, top_y=None):
-    o = cel(R(-w / 2, -h, w, 18, 4), *color)
+    o = contact(w * 0.55, y=-4) + cel(R(-w / 2, -h, w, 18, 4), *color)
     o += flat(R(-w / 2 + 12, -h + 18, 14, h - 18) + R(w / 2 - 26, -h + 18, 14, h - 18), color[1], 3)
     return g(o, x, y)
 
 
 def nightstand(x, y, s=1, lamp=False):
-    o = cel(R(-40, -90, 80, 90, 4), *WOOD)
+    o = contact(50, y=-4) + cel(R(-40, -90, 80, 90, 4), *WOOD)
     o += flat(R(-30, -70, 60, 26, 3), WOOD[1], 3) + flat(E(0, -57, 4), GOLD[0], 2)
     if lamp:
         o += flat(R(-4, -130, 8, 40), GOLD[1], 2) + cel(P("M-24,-128 L24,-128 L16,-160 L-16,-160 Z"), "#efe1b0", "#c9b27a", 3, 3)
@@ -1077,6 +1219,7 @@ def nightstand(x, y, s=1, lamp=False):
 
 def bed(x, y, s=1):
     o = cel(R(-200, -200, 30, 200, 6), *WOOD_DARK)
+    o = contact(210, y=-4) + o
     o += cel(R(-180, -90, 360, 70, 10), "#e9e0f2", "#b8acc9")
     o += cel(R(-176, -120, 90, 36, 14), "#f6f2fa", "#c9c2d6", 3, 3)
     o += cel(R(-80, -96, 260, 60, 10), "#6b3fa0", "#4a2a72")
@@ -1110,7 +1253,7 @@ def fireplace(x, y, s=1, fire=True, clock_on=False):
 
 
 def fridge(x, y, s=1, open_=False):
-    o = cel(R(-60, -280, 120, 280, 10), "#e9eef2", "#b9c3cc")
+    o = contact(80, y=-4) + cel(R(-60, -280, 120, 280, 10), "#e9eef2", "#b9c3cc")
     if open_:
         o += fill(R(-50, -270, 100, 260), "#fffbe0")
         o += glow(0, -150, 140, "#fffbe0", 0.5)

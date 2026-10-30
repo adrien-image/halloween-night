@@ -14,12 +14,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from art import *  # noqa: E402,F401,F403
 import art  # noqa: E402
 
+art.PRINT_MODE = True
+
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "images"
 
-STYLE = ("Affiche imprimée en risographie : dessin cartoon à contours épais réduit à six encres "
-         "(violet nuit, prune, magenta, orange citrouille, pêche) sur papier crème, léger décalage "
-         "de repérage, trame de demi-teinte et grain du papier. "
+STYLE = ("Illustration semi-réaliste (modelé en dégradés, textures, ombres douces) imprimée "
+         "en risographie : réduite à six encres (violet nuit, prune, magenta, orange citrouille, "
+         "pêche) sur papier crème, léger décalage de repérage, trame de demi-teinte et grain du papier. "
          "Personnages récurrents : le héros déguisé en vampire (teint blafard, cheveux noirs "
          "en pointe, cape noire à col rouge, nœud papillon rouge), Mme Morticia / Yvonne "
          "(vieille dame, chignon blanc, robe prune, collier de perles avec une clé), Henri "
@@ -154,6 +156,8 @@ def set_bedroom(lit=False, photos=False):
         for (x, y, w, h, t) in ((90, 90, 70, 90, -3), (180, 70, 60, 70, 2), (100, 210, 60, 70, 3), (190, 180, 80, 100, -2),
                                 (700, 90, 70, 90, 2), (800, 80, 60, 70, -3), (720, 210, 80, 70, -1), (820, 200, 60, 80, 3)):
             o += frame_wall(x, y, w, h, "couple", t)
+    # lumière du lampadaire projetée au sol
+    o += fill(POLY((380, 470), (580, 470), (660, 600), (330, 600)), "#ffe9a0", 'opacity="0.12" filter="url(#blur20)"')
     o += bed(860, 520, 0.8)
     if not lit:
         o += darken(0.35)
@@ -195,7 +199,8 @@ def set_fin(color="#2a1a40"):
 
 
 def finish(o, vig=True):
-    # pas de vignettage : réduit à quelques encres, il formerait un ovale dur
+    """Passe finale commune : impression risographie (sans vignettage ni halo, qui formeraient
+    des ovales durs une fois réduits à quelques encres)."""
     return print_finish(o)
 
 
@@ -975,7 +980,7 @@ def main():
     for slide in story:
         pid = slide["id"]
         desc, fn = SCENES[pid]
-        art._ids = __import__("itertools").count()
+        art.reset()
         body = fn()
         content = f"<title>{desc}</title><desc>{STYLE}</desc>" + body
         (OUT_DIR / f"page-{pid}.svg").write_text(svg(content), encoding="utf-8")
