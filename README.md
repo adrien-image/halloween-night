@@ -6,7 +6,9 @@ Histoire interactive dont vous êtes le héros, publiée sur GitHub Pages.
 - `tools/build_story.py` : transforme le texte source en `story.js` (texte repris tel quel).
 - `tools/art.py` + `tools/generate_images.py` : génèrent une illustration SVG par slide
   dans `images/`, dans un style semi-réaliste commun (modelé en dégradés, textures,
-  ombres douces ; mêmes personnages, décors et palette). La description (« prompt ») de chaque image est dans `images/prompts.json`.
+  ombres douces ; mêmes personnages, décors et palette), imprimé « en risographie »
+  (six encres sur papier crème, décalage de repérage, trame et grain). La description
+  (« prompt ») de chaque image est dans `images/prompts.json`.
 - `index.html`, `style.css`, `app.js` : le site.
 
 Le workflow `.github/workflows/pages.yml` régénère et redéploie le site à chaque push

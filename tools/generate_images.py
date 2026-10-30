@@ -14,12 +14,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from art import *  # noqa: E402,F401,F403
 import art  # noqa: E402
 
+art.PRINT_MODE = True
+
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "images"
 
-STYLE = ("Illustration semi-réaliste, modelé doux en dégradés, contours fins, proportions "
-         "naturelles, ombres portées floues, textures de bois, de papier peint et grain de film, "
-         "lumières diffuses, palette nocturne violet et orange citrouille. "
+STYLE = ("Illustration semi-réaliste (modelé en dégradés, textures, ombres douces) imprimée "
+         "en risographie : réduite à six encres (violet nuit, prune, magenta, orange citrouille, "
+         "pêche) sur papier crème, léger décalage de repérage, trame de demi-teinte et grain du papier. "
          "Personnages récurrents : le héros déguisé en vampire (teint blafard, cheveux noirs "
          "en pointe, cape noire à col rouge, nœud papillon rouge), Mme Morticia / Yvonne "
          "(vieille dame, chignon blanc, robe prune, collier de perles avec une clé), Henri "
@@ -197,11 +199,9 @@ def set_fin(color="#2a1a40"):
 
 
 def finish(o, vig=True):
-    """Passe finale commune : lumière d'ambiance chaude, vignettage et grain de film."""
-    o += glow(W * 0.3, H * 0.25, 520, "#ffcf9a", 0.12)
-    o += vignette() if vig else ""
-    o += '<rect width="960" height="600" filter="url(#grain)" opacity="0.12" style="mix-blend-mode:overlay"/>'
-    return o
+    """Passe finale commune : impression risographie (sans vignettage ni halo, qui formeraient
+    des ovales durs une fois réduits à quelques encres)."""
+    return print_finish(o)
 
 
 # =============================================================== scènes
